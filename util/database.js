@@ -1,8 +1,13 @@
-const Sequelize = require('sequelize')
+const mongodb = require('mongodb')
+const MongoClient = mongodb.MongoClient
 
-const sequelize = new Sequelize('book_store', 'root', '', {
-    dialect: 'mysql',
-    host: '127.0.0.1'
-})
+const mongoConnect = callback => {   
+    MongoClient.connect('mongodb+srv://aliraza:aliraza@cluster0.g6cnw.mongodb.net/onlineshop?retryWrites=true&w=majority').then(client =>{
+        console.log('Connected! ', client)
+        callback(client)
+    }).catch(err => {
+        console.log('Error! ', err)
+    })
+}
 
-module.exports = sequelize
+module.exports = mongoConnect
