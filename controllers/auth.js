@@ -1,12 +1,12 @@
-exports.getOrders = (req, res, next) => {
-    Order.find({ 'user.userId': req.user._id })
-      .then(orders => {
-        res.render('shop/orders', {
-          path: '/orders',
-          pageTitle: 'Your Orders',
-          orders: orders
-        })
-      }).then(err => {
-        console.log(err)
-      })
-  }
+exports.getLogin = (req, res, next) => {
+    res.render('auth/login', {
+        path: '/login',
+        pageTitle: 'Login',
+        isAuthenticated: req.isLoggedIn
+    })
+}
+
+exports.postLogin = (req, res, next) => {
+    req.isLoggedIn = true
+    res.redirect('/')
+}

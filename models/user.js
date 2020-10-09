@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { strictLeft } = require('sequelize/types/lib/operators')
+
 
 const Schema = mongoose.Schema
 
