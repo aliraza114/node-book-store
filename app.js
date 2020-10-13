@@ -4,11 +4,18 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const session = require('express-session')
+const MongoDBStore = require('connect-mongodb-session')
 
 const errorController = require('./controllers/error')
 const User = require('./models/user')
 
+const MONGODB_URI = 'mongodb+srv://aliraza:aliraza@cluster0.g6cnw.mongodb.net/onlineshop'
+
 const app = express()
+const store = new MongoDBStore({
+    uri: MONGODB_URI,
+    collection: 'session'
+})
 
 app.set('view engine', 'ejs')
 app.set('views', 'views')
@@ -19,10 +26,13 @@ const authRoutes = require('./routes/auth')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, 'public')))
-app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false}))
+app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false, store: store}))
 
 app.use((req, res, next) => {
-    User.findById('5f782736f1b4de222ad825e6')
+    if(!req.secure.user){
+        next()
+    }
+    User.findById(req.session.user._id)
         .then(user => {
             req.user = user
             next()
@@ -38,7 +48,7 @@ app.use(authRoutes);
 
 app.use(errorController.get404)
 
-mongoose.connect('mongodb+srv://aliraza:aliraza@cluster0.g6cnw.mongodb.net/onlineshop?retryWrites=true&w=majority',
+mongoose.connect(MONGODB_URI,
     { useNewUrlParser: true, useUnifiedTopology: true })
     .then(result => {
         User.findOne().then(user => {
